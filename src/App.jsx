@@ -7,6 +7,7 @@ import {
   Image
 } from "@nextui-org/react"; 
 import { useEffect, useState } from "react";
+import parse from 'html-react-parser';
 
 export function App() {
     const [tokenUri, setTokenUri] = useState("");
@@ -15,19 +16,22 @@ export function App() {
     const [image, setImage] = useState("");
 
     useEffect(() => {
-
-    },[])
+      previewNft();
+    }, [tokenUri])
 
     const handleMessageChange = (event) => {
+      setName("")
+      setDescription("")
+      setImage("")
       setTokenUri(event.target.value);
-      console.log(tokenUri)
-      previewNft()  
     };
 
     function previewNft() {
       try {
+        if(!tokenUri.startsWith("data:application/json;base64,")) {
+          return;
+        }
         const replace = tokenUri.replace("data:application/json;base64,", "");
-        console.log(replace)
         let decodedStr = JSON.parse(atob(replace));
         setName(decodedStr["name"]);
         setDescription(decodedStr["description"]);
@@ -59,9 +63,7 @@ export function App() {
 
           <Text> Nome: {name} </Text>
           <Text> Description: {description} </Text>
-          <Image src={image} > 
-
-          </Image>
+          { <div style={{width:"320px", height:"400px"}}>{parse(image)}</div> }
         </Card>
       </Container>
     </NextUIProvider>
